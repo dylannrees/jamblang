@@ -7,7 +7,7 @@ random, sympy, urllib_request = lazy_import('random sympy urllib.request')
 code_page  = '''¡¢£¤¥¦©¬®µ½¿€ÆÇÐÑ×ØŒÞßæçðıȷñ÷øœþ !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~¶'''
 code_page += '''°¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ƁƇƊƑƓƘⱮƝƤƬƲȤɓƈɗƒɠɦƙɱɲƥʠɼʂƭʋȥẠḄḌẸḤỊḲḶṂṆỌṚṢṬỤṾẈỴẒȦḂĊḊĖḞĠḢİĿṀṄȮṖṘṠṪẆẊẎŻạḅḍẹḥịḳḷṃṇọṛṣṭ§Äẉỵẓȧḃċḋėḟġḣŀṁṅȯṗṙṡṫẇẋẏż«»‘’“”'''
 
-# Unused symbols for single-byte atoms/quicks: (quƁƘȤɦɱɲƥʠʂȥḥḳṇẉỵẓėġṅẏ
+# Unused symbols for single-byte atoms/quicks: (quƁƘȤɦɲƥʠʂȥḥḳṇẉỵẓėġṅẏ
 
 str_digit = '0123456789'
 str_lower = 'abcdefghijklmnopqrstuvwxyz'
@@ -757,7 +757,7 @@ def parse_code(code):
 
 def parse_literal(literal_match):
 	literal = literal_match.group(0)
-	if literal[0] in '”⁾':
+	if literal[0] in '”⁾)':
 		return repr(literal[1:].replace('¶', '\n'))
 	elif literal[0] == '“':
 		if literal[-1] in '«»‘’”':
@@ -3105,7 +3105,7 @@ hypers['Ɱ'] = hypers['Ð€']
 chain_separators = {
 	'ø': (0, '', True),
 	'µ': (1, '', True),
-	')': (1, '€', True),
+	'ɱ': (1, '€', True),
 	'ð': (2, '', True),
 	'ɓ': (2, '', False)
 }
@@ -3114,11 +3114,12 @@ str_arities = ''.join(chain_separators.keys())
 str_strings = '“[^«»‘’”]*[«»‘’”]?'
 str_charlit = '”.'
 str_chrpair = '⁾..'
+str_chrtrip = '\\)...'
 str_intpair = '⁽..'
 str_realdec = '(?:0|-?\d*\.\d*|-?\d+|-)'
 str_realnum = str_realdec.join(['(?:', '?ȷ', '?|', ')'])
 str_complex = str_realnum.join(['(?:', '?ı', '?|', ')'])
-str_literal = '(?:%s)' % '|'.join([str_strings, str_charlit, str_chrpair, str_complex, str_intpair])
+str_literal = '(?:%s)' % '|'.join([str_strings, str_charlit, str_chrpair, str_chrtrip, str_complex, str_intpair])
 str_litlist = '\[*' + str_literal + '(?:(?:\]*,\[*)' + str_literal + ')*' + '\]*'
 str_nonlits = '|'.join(map(re.escape, list(atoms) + list(quicks) + list(hypers)))
 
