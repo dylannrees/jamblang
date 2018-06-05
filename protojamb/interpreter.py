@@ -7,7 +7,7 @@ random, sympy, urllib_request = lazy_import('random sympy urllib.request')
 code_page  = '''¡¢£¤¥¦©¬®µ½¿€ÆÇÐÑ×ØŒÞßæçðıȷñ÷øœþ !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~¶'''
 code_page += '''°¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ƁƇƊƑƓƘⱮƝƤƬƲȤɓƈɗƒɠɦƙɱɲƥʠɼʂƭʋȥẠḄḌẸḤỊḲḶṂṆỌṚṢṬỤṾẈỴẒȦḂĊḊĖḞĠḢİĿṀṄȮṖṘṠṪẆẊẎŻạḅḍẹḥịḳḷṃṇọṛṣṭ§Äẉỵẓȧḃċḋėḟġḣŀṁṅȯṗṙṡṫẇẋẏż«»‘’“”'''
 
-# Unused symbols for single-byte atoms/quicks: (quƁƘȤɦɲƥʠʂȥḥḳṇẉỵẓėġṅẏ
+# Unused symbols for single-byte atoms/quicks: (quƁƘȤɦɲƥʠʂȥḥḳṇẉỵẓėġṅẏ£Ŀŀ
 
 str_digit = '0123456789'
 str_lower = 'abcdefghijklmnopqrstuvwxyz'
@@ -3083,15 +3083,15 @@ hypers = {
 		arity = max(1, link.arity),
 		call = lambda x, y = None: [variadic_link(link, (x, t)) for t in iterable(y, make_range = True)]
 	),
-	'£': lambda index, links: attrdict(
+	'Ð¢': lambda index, links: attrdict(
 		arity = index.arity,
 		call = lambda x = None, y = None: niladic_chain(links[(variadic_link(index, (x, y)) - 1) % (len(links) - 1)])
 	),
-	'Ŀ': lambda index, links: attrdict(
+	'ÐÇ': lambda index, links: attrdict(
 		arity = max(1, index.arity),
 		call = lambda x, y = None: monadic_chain(links[(variadic_link(index, (x, y)) - 1) % (len(links) - 1)], x)
 	),
-	'ŀ': lambda index, links: attrdict(
+	'Ðç': lambda index, links: attrdict(
 		arity = 2,
 		call = lambda x, y: dyadic_chain(links[(variadic_link(index, (x, y)) - 1) % (len(links) - 1)], (x, y))
 	)
