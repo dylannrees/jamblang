@@ -2150,11 +2150,6 @@ atoms = {
 		ldepth = 0,
 		call = lambda z: sympy.ntheory.generate.nextprime(z)
 	),
-	'ÆP': attrdict(
-		arity = 1,
-		ldepth = 0,
-		call = lambda z: int(sympy.primetest.isprime(z))
-	),
 	'Æp': attrdict(
 		arity = 1,
 		ldepth = 0,
