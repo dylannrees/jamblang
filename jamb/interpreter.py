@@ -418,15 +418,15 @@ def is_string(argument):
 		return False
 	return all(map(lambda t: type(t) == str, argument))
 
-def jelly_eval(code, arguments):
+def jamb_eval(code, arguments):
 	return variadic_chain(parse_code(code)[-1] if code else '', arguments)
 
-def jelly_uneval(argument, top = True):
+def jamb_uneval(argument, top = True):
 	the_type = type(argument)
 	if the_type in (float, int):
-		return jelly_uneval_real(argument)
+		return jamb_uneval_real(argument)
 	if the_type == complex:
-		return jelly_uneval_real(argument.real) + 'ı' + jelly_uneval_real(argument.imag)
+		return jamb_uneval_real(argument.real) + 'ı' + jamb_uneval_real(argument.imag)
 	if the_type == str:
 		return '”' + argument
 	if all(map(is_string, argument)):
@@ -437,14 +437,14 @@ def jelly_uneval(argument, top = True):
 		string = ''.join(argument)
 		if all(map(lambda t: code_page.find(t) < 250, string)):
 			return '“' + string + '”'
-	middle = ','.join(jelly_uneval(item, top = False) for item in argument)
+	middle = ','.join(jamb_uneval(item, top = False) for item in argument)
 	return middle if top else '[' + middle + ']'
 
-def jelly_uneval_real(number):
+def jamb_uneval_real(number):
 	string = str(number if number % 1 else int(number))
 	return string.lstrip('0') if number else string
 
-def jellify(element, dirty = False):
+def jambify(element, dirty = False):
 	if element is None:
 		return []
 	if type(element) == str and dirty:
@@ -452,7 +452,7 @@ def jellify(element, dirty = False):
 	if type(element) in (int, float, complex) or (type(element) == str and len(element) == 1):
 		return element
 	try:
-		return [jellify(item, dirty) for item in element]
+		return [jambify(item, dirty) for item in element]
 	except:
 		if element.is_integer:
 			return int(element)
@@ -853,7 +853,7 @@ def powerset(array):
 	array = iterable(array, make_range = True)
 	ret = []
 	for t in range(len(array) + 1):
-		ret += jellify(itertools.combinations(array, t))
+		ret += jambify(itertools.combinations(array, t))
 	return ret
 
 def prefix(links, outmost_links, index):
@@ -872,7 +872,7 @@ def primerange(start, end):
 
 def python_eval(string, dirty = True):
 	try:
-		return jellify(eval(string), dirty)
+		return jambify(eval(string), dirty)
 	except SyntaxError:
 		exec(string)
 		return []
@@ -1126,7 +1126,7 @@ def try_eval(string):
 	try:
 		return python_eval(string)
 	except:
-		return jellify(string, True)
+		return jambify(string, True)
 
 def to_base(integer, base, bijective = False):
 	if integer == 0:
@@ -1202,7 +1202,7 @@ def to_primorial_base(integer):
 		digits.append(remainder)
 	return digits[::-1]
 
-def unicode_to_jelly(string):
+def unicode_to_jamb(string):
 	return ''.join(chr(code_page.find(char)) for char in str(string).replace('\n', '¶') if char in code_page)
 
 def unique(array):
@@ -1287,12 +1287,12 @@ def output(argument, end = '', transform = stringify):
 	if locale.getdefaultlocale()[1][0:3] == 'UTF':
 		print(transform(argument), end = end)
 	else:
-		print(unicode_to_jelly(transform(argument)), end = unicode_to_jelly(end))
+		print(unicode_to_jamb(transform(argument)), end = unicode_to_jamb(end))
 	sys.stdout.flush()
 	return argument
 
 def zip_ragged(array):
-	return jellify(map(lambda t: filter(None.__ne__, t), itertools.zip_longest(*map(iterable, array))))
+	return jambify(map(lambda t: filter(None.__ne__, t), itertools.zip_longest(*map(iterable, array))))
 
 atoms = {
 	'³': attrdict(
@@ -1498,7 +1498,7 @@ atoms = {
 	),
 	'ɠ': attrdict(
 		arity = 0,
-		call = lambda: jellify(input(), dirty = True)
+		call = lambda: jambify(input(), dirty = True)
 	),
 	'H': attrdict(
 		arity = 1,
@@ -1557,7 +1557,7 @@ atoms = {
 	),
 	'Ḳ': attrdict(
 		arity = 1,
-		call = lambda z: jellify(split_at(iterable(z), ' '))
+		call = lambda z: jambify(split_at(iterable(z), ' '))
 	),
 	'k': attrdict(
 		arity = 2,
@@ -1667,12 +1667,12 @@ atoms = {
 	),
 	'p': attrdict(
 		arity = 2,
-		call = lambda x, y: jellify(itertools.product(iterable(x, make_range = True), iterable(y, make_range = True)))
+		call = lambda x, y: jambify(itertools.product(iterable(x, make_range = True), iterable(y, make_range = True)))
 	),
 	'ṗ': attrdict(
 		arity = 2,
 		rdepth = 0,
-		call = lambda x, y: jellify(itertools.product(*([iterable(x, make_range = True)] * y)))
+		call = lambda x, y: jambify(itertools.product(*([iterable(x, make_range = True)] * y)))
 	),
 	'Q': attrdict(
 		arity = 1,
@@ -1689,7 +1689,7 @@ atoms = {
 	),
 	'Ṙ': attrdict(
 		arity = 1,
-		call = lambda z: output(z, transform = jelly_uneval)
+		call = lambda z: output(z, transform = jamb_uneval)
 	),
 	'r': attrdict(
 		arity = 2,
@@ -1731,7 +1731,7 @@ atoms = {
 	),
 	'ṣ': attrdict(
 		arity = 2,
-		call = lambda x, y: jellify(split_at(iterable(x, make_digits = True), y))
+		call = lambda x, y: jambify(split_at(iterable(x, make_digits = True), y))
 	),
 	'T': attrdict(
 		arity = 1,
@@ -1771,16 +1771,16 @@ atoms = {
 	'V': attrdict(
 		arity = 1,
 		ldepth = 1,
-		call = lambda z: jelly_eval(''.join(map(str, z)), [])
+		call = lambda z: jamb_eval(''.join(map(str, z)), [])
 	),
 	'Ṿ': attrdict(
 		arity = 1,
-		call = lambda z: jellify(jelly_uneval(z))
+		call = lambda z: jambify(jamb_uneval(z))
 	),
 	'v': attrdict(
 		arity = 2,
 		ldepth = 1,
-		call = lambda x, y: jelly_eval(''.join(map(str, x)), [y])
+		call = lambda x, y: jamb_eval(''.join(map(str, x)), [y])
 	),
 	'W': attrdict(
 		arity = 1,
@@ -1826,7 +1826,7 @@ atoms = {
 	),
 	'Ỵ': attrdict(
 		arity = 1,
-		call = lambda z: jellify(split_at(iterable(z), '\n'))
+		call = lambda z: jambify(split_at(iterable(z), '\n'))
 	),
 	'Ẏ': attrdict(
 		arity = 1,
@@ -1851,7 +1851,7 @@ atoms = {
 	),
 	'z': attrdict(
 		arity = 2,
-		call = lambda x, y: jellify(itertools.zip_longest(*map(iterable, x), fillvalue = y))
+		call = lambda x, y: jambify(itertools.zip_longest(*map(iterable, x), fillvalue = y))
 	),
 	'ż': attrdict(
 		arity = 2,
@@ -2163,12 +2163,12 @@ atoms = {
 	'Ær': attrdict(
 		arity = 1,
 		ldepth = 1,
-		call = lambda z: jellify(from_base(z[::-1], sympy.poly('x')).all_roots())
+		call = lambda z: jambify(from_base(z[::-1], sympy.poly('x')).all_roots())
 	),
 	'Æṛ': attrdict(
 		arity = 1,
 		ldepth = 1,
-		call = lambda z: jellify(sympy.prod(map(sympy.poly('x').__sub__, z)).coeffs()[::-1])
+		call = lambda z: jambify(sympy.prod(map(sympy.poly('x').__sub__, z)).coeffs()[::-1])
 	),
 	'ÆT': attrdict(
 		arity = 1,
@@ -2252,7 +2252,7 @@ atoms = {
 	),
 	'Œ!': attrdict(
 		arity = 1,
-		call = lambda z: jellify(itertools.permutations(iterable(z, make_range = True)))
+		call = lambda z: jambify(itertools.permutations(iterable(z, make_range = True)))
 	),
 	'Œ?': attrdict(
 		arity = 1,
@@ -2279,12 +2279,12 @@ atoms = {
 	'Œc': attrdict(
 		arity = 1,
 		rdepth = 0,
-		call = lambda z: jellify(itertools.combinations(iterable(z, make_range = True), 2))
+		call = lambda z: jambify(itertools.combinations(iterable(z, make_range = True), 2))
 	),
 	'Œċ': attrdict(
 		arity = 1,
 		rdepth = 0,
-		call = lambda z: jellify(itertools.combinations_with_replacement(iterable(z, make_range = True), 2))
+		call = lambda z: jambify(itertools.combinations_with_replacement(iterable(z, make_range = True), 2))
 	),
 	'ŒD': attrdict(
 		arity = 1,
@@ -2373,7 +2373,7 @@ atoms = {
 	),
 	'Œp': attrdict(
 		arity = 1,
-		call = lambda z: jellify(itertools.product(*[iterable(t, make_range = True) for t in z]))
+		call = lambda z: jambify(itertools.product(*[iterable(t, make_range = True) for t in z]))
 	),
 	'ŒQ': attrdict(
 		arity = 1,
@@ -2386,7 +2386,7 @@ atoms = {
 	),
 	'ŒṘ': attrdict(
 		arity = 1,
-		call = lambda z: jellify(repr(z))
+		call = lambda z: jambify(repr(z))
 	),
 	'Œr': attrdict(
 		arity = 1,
@@ -2557,12 +2557,12 @@ atoms = {
 	'œc': attrdict(
 		arity = 2,
 		rdepth = 0,
-		call = lambda x, y: jellify(itertools.combinations(iterable(x, make_range = True), y))
+		call = lambda x, y: jambify(itertools.combinations(iterable(x, make_range = True), y))
 	),
 	'œċ': attrdict(
 		arity = 2,
 		rdepth = 0,
-		call = lambda x, y: jellify(itertools.combinations_with_replacement(iterable(x, make_range = True), y))
+		call = lambda x, y: jambify(itertools.combinations_with_replacement(iterable(x, make_range = True), y))
 	),
 	'œẹ': attrdict(
 		arity = 2,
@@ -2612,7 +2612,7 @@ atoms = {
 	),
 	'œṣ': attrdict(
 		arity = 2,
-		call = lambda x, y: jellify(split_around(iterable(x, make_digits = True), iterable(y)))
+		call = lambda x, y: jambify(split_around(iterable(x, make_digits = True), iterable(y)))
 	),
 	'œ&': attrdict(
 		arity = 2,
