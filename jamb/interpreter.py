@@ -7,7 +7,7 @@ random, sympy, urllib_request = lazy_import('random sympy urllib.request')
 code_page  = '''¡¢£¤¥¦©¬®µ½¿€ÆÇÐÑ×ØŒÞßæçðıȷñ÷øœþ !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~¶'''
 code_page += '''°¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ƁƇƊƑƓƘⱮƝƤƬƲȤɓƈɗƒɠɦƙɱɲƥʠɼʂƭʋȥẠḄḌẸḤỊḲḶṂṆỌṚṢṬỤṾẈỴẒȦḂĊḊĖḞĠḢİĿṀṄȮṖṘṠṪẆẊẎŻạḅḍẹḥịḳḷṃṇọṛṣṭ§Äẉỵẓȧḃċḋėḟġḣŀṁṅȯṗṙṡṫẇẋẏż«»‘’“”'''
 
-# Unused symbols for single-byte atoms/quicks: (quƁƘȤɦɲƥʠʂȥḥḳṇẉỵẓėġṅẏ£Ŀŀ
+# Unused symbols for single-byte atoms/quicks: (quƁƘȤɦɲƥʠʂȥḥḳṇẉỵẓėġṅẏ£Ŀŀñ
 
 str_digit = '0123456789'
 str_lower = 'abcdefghijklmnopqrstuvwxyz'
@@ -2844,7 +2844,7 @@ quicks = {
 		condition = lambda links: True,
 		quicklink = lambda links, outmost_links, index: [create_chain(outmost_links[(index + 1) % len(outmost_links)], 1)]
 	),
-	'ñ': attrdict(
+	'Ðñ': attrdict(
 		condition = lambda links: True,
 		quicklink = lambda links, outmost_links, index: [create_chain(outmost_links[(index + 1) % len(outmost_links)], 2)]
 	),
@@ -2983,7 +2983,7 @@ quicks = {
 			call = lambda x, y = None: sparse(links[0], (x, y), range(2, len(x) + 2, 2), indices_literal = True)
 		)]
 	),
-	'Ðf': attrdict(
+	'Ƈ': attrdict(
 		condition = lambda links: links,
 		quicklink = lambda links, outmost_links, index: [attrdict(
 			arity = links[0].arity,
@@ -3074,7 +3074,7 @@ hypers = {
 		arity = 2,
 		call = lambda x, y: [[dyadic_link(link, (u, v)) for u in iterable(x, make_range = True)] for v in iterable(y, make_range = True)]
 	),
-	'Ð€': lambda link, none = None: attrdict(
+	'Ɱ': lambda link, none = None: attrdict(
 		arity = max(1, link.arity),
 		call = lambda x, y = None: [variadic_link(link, (x, t)) for t in iterable(y, make_range = True)]
 	),
@@ -3092,10 +3092,6 @@ hypers = {
 	)
 }
 
-# Aliases
-
-quicks['Ƈ'] = quicks['Ðf']
-hypers['Ɱ'] = hypers['Ð€']
 
 chain_separators = {
 	'ø': (0, '', True),
@@ -3122,4 +3118,3 @@ regex_chain = re.compile('(?:^(?:' + str_nonlits + '|' + str_litlist + '| )+|[' 
 regex_liter = re.compile(str_literal)
 regex_token = re.compile(str_nonlits + '|' + str_litlist)
 regex_flink = re.compile('(?=.)(?:[' + str_arities + ']|' + str_nonlits + '|' + str_litlist + '| )*¶?')
-#comment
