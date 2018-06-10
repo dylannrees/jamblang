@@ -2895,7 +2895,7 @@ quicks = {
 		condition = lambda links: links,
 		quicklink = lambda links, outmost_links, index: [attrdict(
 			arity = max(1, links[0].arity),
-			ions = [attrdict(call = lambda x, y = None: [variadic_link(links[0], (t, y)) for t in iterable(x, make_range = True)])]
+			call = lambda x, y = None: [variadic_link(links[0], (t, y)) for t in iterable(x, make_range = True)]
 		)]
 	),
 	'¦': attrdict(
@@ -2942,7 +2942,7 @@ quicks = {
 		condition = lambda links: links and not leading_nilad(links),
 		quicklink = lambda links, outmost_links, index: [attrdict(
 			arity = 1,
-			ions = [attrdict(call = lambda z: neighbors(links, z))]
+			call = lambda z: neighbors(links, z)
 		)]
 	),
 	'Ƥ': attrdict(
