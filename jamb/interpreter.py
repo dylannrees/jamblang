@@ -7,7 +7,7 @@ random, sympy, urllib_request = lazy_import('random sympy urllib.request')
 code_page  = '''¡¢£¤¥¦©¬®µ½¿€ÆÇÐÑ×ØŒÞßæçðıȷñ÷øœþ !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~¶'''
 code_page += '''°¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ƁƇƊƑƓƘⱮƝƤƬƲȤɓƈɗƒɠɦƙɱɲƥʠɼʂƭʋȥẠḄḌẸḤỊḲḶṂṆỌṚṢṬỤṾẈỴẒȦḂĊḊĖḞĠḢİĿṀṄȮṖṘṠṪẆẊẎŻạḅḍẹḥịḳḷṃṇọṛṣṭ§Äẉỵẓȧḃċḋėḟġḣŀṁṅȯṗṙṡṫẇẋẏż«»‘’“”'''
 
-# Unused symbols for single-byte atoms/quicks: (quƁƘȤɦɲƥʠʂȥḥḳṇẉỵẓėġṅẏ£Ŀŀñ
+# Unused symbols for single-byte atoms/quicks: {}(quƁƘȤɦɲƥʠʂȥḥḳṇẉỵẓėġṅẏ£Ŀŀñ
 
 str_digit = '0123456789'
 str_lower = 'abcdefghijklmnopqrstuvwxyz'
@@ -214,12 +214,18 @@ def dyadic_ion(link, args, conv = True, lflat = False, rflat = False):
 def dyadic_link(link, args, conv = True, lflat = False, rflat = False):
 	if not hasattr(link, 'ions'):
 		return dyadic_ion(link, args, conv = conv, lflat = lflat, rflat = rflat)
-	for ion in link.ions:
-		try:
-			result = dyadic_ion(ion, args, conv = conv, lflat = lflat, rflat = rflat)
-			return result
-		except:
-			pass
+	ions = link.ions
+	while ions:
+		ion = ions[0]
+		ions = ions[1:]
+		if ions:
+			try:
+				result = dyadic_ion(ion, args, conv = conv, lflat = lflat, rflat = rflat)
+				return result
+			except:
+				pass
+		else:
+			return dyadic_ion(ion, args, conv = conv, lflat = lflat, rflat = rflat)
 
 def enumerate_md(array, upper_level = []):
 	for i, item in enumerate(array):
@@ -636,12 +642,18 @@ def monadic_ion(ion, arg, flat = False, conv = True):
 def monadic_link(link, arg, flat = False, conv = True):
 	if not hasattr(link, 'ions'):
 		return monadic_ion(link, arg, flat = flat, conv = conv)
-	for ion in link.ions:
-		try:
-			result = monadic_ion(ion, arg, flat = flat, conv = conv)
-			return result
-		except:
-			pass
+	ions = link.ions
+	while ions:
+		ion = ions[0]
+		ions = ions[1:]
+		if ions:
+			try:
+				result = monadic_ion(ion, arg, flat = flat, conv = conv)
+				return result
+			except:
+				pass
+		else:
+			return monadic_ion(ion, arg, flat = flat, conv = conv)
 
 def multiset_difference(left, right):
 	result = iterable(left)[::-1]
@@ -2891,6 +2903,17 @@ quicks = {
 		condition = lambda links: True,
 		quicklink = lambda links, outmost_links, index: [create_chain(outmost_links[(index + 1) % len(outmost_links)], 2)]
 	),
+	#'@': lambda link, none = None: attrdict(
+	#	arity = 2,
+	#	call = lambda x, y: dyadic_link(link, (y, x))
+	#),
+	'@': attrdict(
+		condition = lambda links: links,
+		quicklink = lambda links, outmost_links, index: [attrdict(
+			arity = 2,
+			call = lambda x, y: variadic_link(links[0], (y, x))
+		)]
+	),
 	'€': attrdict(
 		condition = lambda links: links,
 		quicklink = lambda links, outmost_links, index: [attrdict(
@@ -3004,8 +3027,8 @@ quicks = {
 	'`': attrdict(
 		condition = lambda links: links,
 		quicklink = lambda links, outmost_links, index: [attrdict(
-			arity = 1,
-			call = lambda z: dyadic_link(links[0], (z, z))
+			arity = [0, 2, 1][links[0].arity],
+			call = lambda x, y = None: variadic_link(links[0], (x, x))
 		)]
 	),
 	'⁺': attrdict(
@@ -3099,18 +3122,6 @@ hypers = {
 	"'": lambda link, none = None: attrdict(
 		arity = link.arity,
 		call = lambda x = None, y = None: variadic_link(link, (x, y), flat = True, lflat = True, rflat = True)
-	),
-	'@': lambda link, none = None: attrdict(
-		arity = 2,
-		call = lambda x, y: dyadic_link(link, (y, x))
-	),
-	'{': lambda link, none = None: attrdict(
-		arity = 2,
-		call = lambda x, y: monadic_link(link, x)
-	),
-	'}': lambda link, none = None: attrdict(
-		arity = 2,
-		call = lambda x, y: monadic_link(link, y)
 	),
 	'Þ': lambda link, none = None: attrdict(
 		arity = link.arity,
