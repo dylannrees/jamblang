@@ -52,19 +52,6 @@ def carmichael(n):
 		c = lcm(c, 2 ** (k - 2) if p == 2 < k else (p - 1) * p ** (k - 1))
 	return c
 
-def create_chain(chain, arity = -1, isForward = True):
-	return attrdict(
-		arity = arity,
-		chain = chain,
-		call = lambda x = None, y = None: variadic_chain(chain, isForward and (x, y) or (y, x))
-	)
-
-def create_literal(string):
-	return attrdict(
-		arity = 0,
-		call = lambda: python_eval(string, False)
-	)
-
 def conv_dyadic_integer(link, larg, rarg):
 	try:
 		iconv_larg = int(larg)
@@ -102,6 +89,19 @@ def convolve_power(polynomial, exponent):
 def copy_to(atom, value):
 	atom.call = lambda: value
 	return value
+
+def create_chain(chain, arity = -1, isForward = True):
+	return attrdict(
+		arity = arity,
+		chain = chain,
+		call = lambda x = None, y = None: variadic_chain(chain, isForward and (x, y) or (y, x))
+	)
+
+def create_literal(string):
+	return attrdict(
+		arity = 0,
+		call = lambda: python_eval(string, False)
+	)
 
 def determinant(matrix):
 	matrix = sympy.Matrix(matrix)
@@ -190,7 +190,7 @@ def dyadic_chain(chain, args):
 			chain = chain[1:]
 	return ret
 
-def dyadic_link(link, args, conv = True, lflat = False, rflat = False):
+def dyadic_ion(link, args, conv = True, lflat = False, rflat = False):
 	larg, rarg = args
 	lflat = lflat or not hasattr(link, 'ldepth')
 	rflat = rflat or not hasattr(link, 'rdepth')
@@ -202,14 +202,24 @@ def dyadic_link(link, args, conv = True, lflat = False, rflat = False):
 		return link.call(larg, rarg)
 	conv = conv and hasattr(link, 'conv')
 	if not lflat and larg_depth < link.ldepth:
-		return dyadic_link(link, ([larg], rarg))
+		return dyadic_ion(link, ([larg], rarg))
 	if not rflat and rarg_depth < link.rdepth:
-		return dyadic_link(link, (larg, [rarg]))
+		return dyadic_ion(link, (larg, [rarg]))
 	if not rflat and (lflat or larg_depth - rarg_depth < link.ldepth - link.rdepth):
-		return [dyadic_link(link, (larg, y)) for y in rarg]
+		return [dyadic_ion(link, (larg, y)) for y in rarg]
 	if not lflat and (rflat or larg_depth - rarg_depth > link.ldepth - link.rdepth):
-		return [dyadic_link(link, (x, rarg)) for x in larg]
-	return [dyadic_link(link, (x, y)) for x, y in zip(*args)] + larg[len(rarg) :] + rarg[len(larg) :]
+		return [dyadic_ion(link, (x, rarg)) for x in larg]
+	return [dyadic_ion(link, (x, y)) for x, y in zip(*args)] + larg[len(rarg):] + rarg[len(larg):]
+
+def dyadic_link(link, args, conv = True, lflat = False, rflat = False):
+	if not hasattr(link, 'ions'):
+		return dyadic_ion(link, args, conv = conv, lflat = lflat, rflat = rflat)
+	for ion in link.ions:
+		try:
+			result = dyadic_ion(ion, args, conv = conv, lflat = lflat, rflat = rflat)
+			return result
+		except:
+			pass
 
 def enumerate_md(array, upper_level = []):
 	for i, item in enumerate(array):
@@ -611,17 +621,27 @@ def monadic_chain(chain, arg):
 	atoms['⁸'].call = larg_save
 	return ret
 
-def monadic_link(link, arg, flat = False, conv = True):
-	flat = flat or not hasattr(link, 'ldepth')
+def monadic_ion(ion, arg, flat = False, conv = True):
+	flat = flat or not hasattr(ion, 'ldepth')
 	arg_depth = flat or depth(arg)
-	if flat or link.ldepth == arg_depth:
-		if conv and hasattr(link, 'conv'):
-			return link.conv(link.call, arg)
-		return link.call(arg)
-	conv = conv and hasattr(link, 'conv')
-	if link.ldepth > arg_depth:
-		return monadic_link(link, [arg], conv = conv)
-	return [monadic_link(link, z, conv = conv) for z in arg]
+	if flat or ion.ldepth == arg_depth:
+		if conv and hasattr(ion, 'conv'):
+			return ion.conv(ion.call, arg)
+		return ion.call(arg)
+	conv = conv and hasattr(ion, 'conv')
+	if ion.ldepth > arg_depth:
+		return monadic_ion(ion, [arg], conv = conv)
+	return [monadic_ion(ion, z, conv = conv) for z in arg]
+
+def monadic_link(link, arg, flat = False, conv = True):
+	if not hasattr(link, 'ions'):
+		return monadic_ion(link, arg, flat = flat, conv = conv)
+	for ion in link.ions:
+		try:
+			result = monadic_ion(ion, arg, flat = flat, conv = conv)
+			return result
+		except:
+			pass
 
 def multiset_difference(left, right):
 	result = iterable(left)[::-1]
@@ -1294,6 +1314,7 @@ def output(argument, end = '', transform = stringify):
 def zip_ragged(array):
 	return jambify(map(lambda t: filter(None.__ne__, t), itertools.zip_longest(*map(iterable, array))))
 
+
 atoms = {
 	'³': attrdict(
 		arity = 0,
@@ -1502,8 +1523,15 @@ atoms = {
 	),
 	'H': attrdict(
 		arity = 1,
-		ldepth = 0,
-		call = lambda z: div(z, 2)
+		ions = [
+		attrdict(
+			ldepth = 0,
+			call = lambda z: div(z, 2)
+		),
+		attrdict(
+			ldepth = 1,
+			call = lambda z: z + [z[0]]
+		)]
 	),
 	'Ḥ': attrdict(
 		arity = 1,
@@ -1757,7 +1785,7 @@ atoms = {
 	),
 	'ṭ': attrdict(
 		arity = 2,
-		call = lambda x, y: iterable(y) + [x]
+		call = lambda x, y: iterable(x) + [y]
 	),
 	'U': attrdict(
 		arity = 1,
@@ -2005,9 +2033,17 @@ atoms = {
 	),
 	'»': attrdict(
 		arity = 2,
-		ldepth = 0,
-		rdepth = 0,
-		call = max
+		ions = [
+		attrdict(
+			ldepth = 0,
+			rdepth = 0,
+			call = max
+		),
+		attrdict(
+			ldepth = 1,
+			rdepth = 0,
+			call = lambda x, y: x if len(x) >= y else ([' '] * (len(x) - y) + x)
+		)]
 	),
 	'⁼': attrdict(
 		arity = 2,
@@ -2023,7 +2059,10 @@ atoms = {
 	),
 	'¹': attrdict(
 		arity = 1,
-		call = identity
+		ions = [
+		attrdict(
+			call = identity
+		)]
 	),
 	'ÆA': attrdict(
 		arity = 1,
@@ -2722,6 +2761,10 @@ atoms = {
 		arity = 0,
 		call = lambda: list(str_digit)
 	),
+	'ØḌ': attrdict(
+		arity = 0,
+		call = lambda: list('1234567890')
+	),
 	'ØH': attrdict(
 		arity = 0,
 		call = lambda: list(str_digit + 'ABCDEF')
@@ -2848,6 +2891,13 @@ quicks = {
 		condition = lambda links: True,
 		quicklink = lambda links, outmost_links, index: [create_chain(outmost_links[(index + 1) % len(outmost_links)], 2)]
 	),
+	'€': attrdict(
+		condition = lambda links: links,
+		quicklink = lambda links, outmost_links, index: [attrdict(
+			arity = max(1, links[0].arity),
+			ions = [attrdict(call = lambda x, y = None: [variadic_link(links[0], (t, y)) for t in iterable(x, make_range = True)])]
+		)]
+	),
 	'¦': attrdict(
 		condition = lambda links: len(links) == 2,
 		quicklink = lambda links, outmost_links, index: [attrdict(
@@ -2892,7 +2942,7 @@ quicks = {
 		condition = lambda links: links and not leading_nilad(links),
 		quicklink = lambda links, outmost_links, index: [attrdict(
 			arity = 1,
-			call = lambda z: neighbors(links, z)
+			ions = [attrdict(call = lambda z: neighbors(links, z))]
 		)]
 	),
 	'Ƥ': attrdict(
@@ -3061,10 +3111,6 @@ hypers = {
 	'}': lambda link, none = None: attrdict(
 		arity = 2,
 		call = lambda x, y: monadic_link(link, y)
-	),
-	'€': lambda link, none = None: attrdict(
-		arity = max(1, link.arity),
-		call = lambda x, y = None: [variadic_link(link, (t, y)) for t in iterable(x, make_range = True)]
 	),
 	'Þ': lambda link, none = None: attrdict(
 		arity = link.arity,
