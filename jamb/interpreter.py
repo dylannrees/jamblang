@@ -1245,6 +1245,18 @@ def unique(array):
 			result.append(element)
 	return result
 
+def unique_key(link, args):
+	larg, rarg = args
+	array = iterable(larg, make_range = True)
+	keys = [(t, variadic_link(link, (t, rarg))) for t in array]
+	result = []
+	unique_keys = []
+	for element, key in keys:
+		if not key in unique_keys:
+			result.append(element)
+			unique_keys.append(key)
+	return result
+
 def untruth_md(indices, shape = None, upper_level = []):
 	if not shape:
 		shape = [max(index_zipped) for index_zipped in zip(*indices)]
@@ -2903,10 +2915,6 @@ quicks = {
 		condition = lambda links: True,
 		quicklink = lambda links, outmost_links, index: [create_chain(outmost_links[(index + 1) % len(outmost_links)], 2)]
 	),
-	#'@': lambda link, none = None: attrdict(
-	#	arity = 2,
-	#	call = lambda x, y: dyadic_link(link, (y, x))
-	#),
 	'@': attrdict(
 		condition = lambda links: links,
 		quicklink = lambda links, outmost_links, index: [attrdict(
@@ -2981,6 +2989,13 @@ quicks = {
 		quicklink = lambda links, outmost_links, index: [attrdict(
 			arity = 2,
 			call = lambda x, y: [monadic_link(links[0], g) for g in split_key(iterable(x, make_digits = True), iterable(y, make_digits = True))]
+		)]
+	),
+	'Þ': attrdict(
+		condition = lambda links: links,
+		quicklink = lambda links, outmost_links, index: [attrdict(
+			arity = max(1, links[0].arity),
+			call = lambda x, y = None: sorted(iterable(x, make_range = True), key = lambda t: variadic_link(links[0], (t, y)))
 		)]
 	),
 	'ɼ': attrdict(
@@ -3112,20 +3127,23 @@ quicks = {
 			call = lambda x, y = None: sparse(links[0], (x, y), range(1, len(x) + 1, 2), indices_literal = True)
 		)]
 	),
+	'ÐQ': attrdict(
+		condition = lambda links: links,
+		quicklink = lambda links, outmost_links, index: [attrdict(
+			arity = max(1, links[0].arity),
+			call = lambda x, y = None: unique_key(links[0], (x, y))
+		)]
+	),
 }
 
 hypers = {
 	'"': lambda link, none = None: attrdict(
 		arity = 2,
-		call = lambda x, y: [dyadic_link(link, (u, v)) for u, v in zip(iterable(x), iterable(y))] + iterable(x)[len(iterable(y)) :] + iterable(y)[len(iterable(x)) :]
+		call = lambda x, y: [dyadic_link(link, (u, v)) for u, v in zip(iterable(x), iterable(y))] + iterable(x)[len(iterable(y)):] + iterable(y)[len(iterable(x)):]
 	),
 	"'": lambda link, none = None: attrdict(
 		arity = link.arity,
 		call = lambda x = None, y = None: variadic_link(link, (x, y), flat = True, lflat = True, rflat = True)
-	),
-	'Þ': lambda link, none = None: attrdict(
-		arity = link.arity,
-		call = lambda x, y = None: sorted(iterable(x, make_range = True), key=lambda t: variadic_link(link, (t, y)))
 	),
 	'þ': lambda link, none = None: attrdict(
 		arity = 2,
