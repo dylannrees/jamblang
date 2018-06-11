@@ -1245,16 +1245,27 @@ def unique(array):
 			result.append(element)
 	return result
 
-def unique_key(link, args):
+def unique_key(links, outmost_links, index):
+	ret = [attrdict(arity = max(1, links[0].arity))]
+	if len(links) == 1:
+		ret[0].call = lambda x, y = None: unique_key_degenerate(links[0], (x, y))
+	else:
+		ret[0].call = lambda x, y = None: unique_key_degenerate(links[0], (x, y), n_degen = niladic_link(links[1]))
+	return ret
+
+def unique_key_degenerate(link, args, n_degen = 1):
 	larg, rarg = args
 	array = iterable(larg, make_range = True)
 	keys = [(t, variadic_link(link, (t, rarg))) for t in array]
 	result = []
-	unique_keys = []
+	unique_keys = {}
 	for element, key in keys:
-		if not key in unique_keys:
+		if not key in unique_keys.keys():
 			result.append(element)
-			unique_keys.append(key)
+			unique_keys[key] = 1
+		elif unique_keys[key] < n_degen:
+			result.append(element)
+			unique_keys[key] += 1
 	return result
 
 def untruth_md(indices, shape = None, upper_level = []):
@@ -3128,11 +3139,8 @@ quicks = {
 		)]
 	),
 	'ÐQ': attrdict(
-		condition = lambda links: links,
-		quicklink = lambda links, outmost_links, index: [attrdict(
-			arity = max(1, links[0].arity),
-			call = lambda x, y = None: unique_key(links[0], (x, y))
-		)]
+		condition = lambda links: links and links[0].arity,
+		quicklink = unique_key
 	),
 }
 
