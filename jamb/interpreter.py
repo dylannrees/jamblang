@@ -227,6 +227,13 @@ def dyadic_link(link, args, conv = True, lflat = False, rflat = False):
 		else:
 			return dyadic_ion(ion, args, conv = conv, lflat = lflat, rflat = rflat)
 
+def eigenval_of(links, outmost_links, index):
+	ret = [attrdict(arity = max(1, links[0].arity))]
+	ret[0].call = lambda x, y = None: int(x == variadic_link(links[0], (x, y)))
+	if hasattr(links[0], 'ldepth'):
+		ret[0].ldepth = links[0].ldepth
+	return ret
+
 def enumerate_md(array, upper_level = []):
 	for i, item in enumerate(array):
 		if type(item) != list:
@@ -522,6 +529,13 @@ def nfind(links, args):
 			found.append(larg)
 		larg += 1
 	return found
+
+def not_quicklink(links, outmost_links, index):
+	ret = [attrdict(arity = max(1, links[0].arity))]
+	ret[0].call = lambda x, y = None: int(not variadic_link(links[0], (x, y)))
+	if hasattr(links[0], 'ldepth'):
+		ret[0].ldepth = links[0].ldepth
+	return ret
 
 def matrix_to_list(matrix):
 	return [[simplest_number(entry) for entry in row] for row in matrix.tolist()]
@@ -3005,10 +3019,7 @@ quicks = {
 	),
 	'Ƒ': attrdict(
 		condition = lambda links: links,
-		quicklink = lambda links, outmost_links, index: [attrdict(
-			arity = max(1, links[0].arity),
-			call = lambda x, y = None: int(x == variadic_link(links[0], (x, y)))
-		)]
+		quicklink = eigenval_of
 	),
 	'ƒ': attrdict(
 		condition = lambda links: links and links[0].arity,
@@ -3035,6 +3046,10 @@ quicks = {
 			arity = 2,
 			call = lambda x, y: [monadic_link(links[0], g) for g in split_key(iterable(x, make_digits = True), iterable(y, make_digits = True))]
 		)]
+	),
+	'ɲ': attrdict(
+		condition = lambda links: links,
+		quicklink = not_quicklink
 	),
 	'Þ': attrdict(
 		condition = lambda links: links,
