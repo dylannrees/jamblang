@@ -1247,25 +1247,60 @@ def unique(array):
 
 def unique_key(links, outmost_links, index):
 	ret = [attrdict(arity = max(1, links[0].arity))]
+	if links[1:]:
+		n_option = niladic_link(links[1])
 	if len(links) == 1:
 		ret[0].call = lambda x, y = None: unique_key_degenerate(links[0], (x, y))
+	elif n_option > 0:
+		ret[0].call = lambda x, y = None: unique_key_degenerate(links[0], (x, y), n_degen = n_option)
 	else:
-		ret[0].call = lambda x, y = None: unique_key_degenerate(links[0], (x, y), n_degen = niladic_link(links[1]))
+		ret[0].call = lambda x, y = None: unique_key_trim(links[0], (x, y), n_trim = abs(n_option) + 1)
 	return ret
 
-def unique_key_degenerate(link, args, n_degen = 1):
+def unique_key_degenerate(link, args, n_degen = 1, trim = False):
 	larg, rarg = args
 	array = iterable(larg, make_range = True)
-	keys = [(t, variadic_link(link, (t, rarg))) for t in array]
 	result = []
 	unique_keys = {}
-	for element, key in keys:
+	for element in array:
+		key = variadic_link(link, (element, rarg))
 		if not key in unique_keys.keys():
 			result.append(element)
 			unique_keys[key] = 1
 		elif unique_keys[key] < n_degen:
 			result.append(element)
 			unique_keys[key] += 1
+	return result
+
+def unique_key_trim(link, args, n_trim):
+	larg, rarg = args
+	array = iterable(larg, make_range = True)
+	unique_keys = {}
+	pairs = []
+	for element in array:
+		key = variadic_link(link, (element, rarg))
+		pairs.append((element, key))
+		if not key in unique_keys.keys():
+			unique_keys[key] = 1
+		else:
+			unique_keys[key] += 1
+	result = []
+	keys_limit = {}
+	for key in unique_keys.keys():
+		n_keep = unique_keys[key] - n_trim
+		n_keep = n_keep * (n_keep > 0)
+		keys_limit[key] = n_keep
+	unique_keys_ret = {}
+	print(keys_limit)
+	for element, key in pairs:
+		limit = keys_limit[key]
+		if not key in unique_keys_ret.keys():
+			if limit:
+				result.append(element)
+				unique_keys_ret[key] = 1
+		elif unique_keys_ret[key] < limit:
+			result.append(element)
+			unique_keys_ret[key] += 1
 	return result
 
 def untruth_md(indices, shape = None, upper_level = []):
