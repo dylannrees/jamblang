@@ -37,7 +37,7 @@ def at_index_ndim(indices, array):
 	return retval
 
 def base_decompression(integer, digits):
-	digits = iterable(digits, make_range=True)
+	digits = iterable(digits, make_range = True)
 	return [digits[i-1] for i in to_base(integer, len(digits))]
 
 def bounce(array):
