@@ -519,24 +519,6 @@ def loop_until_loop(link, args, return_all = False, return_loop = False, vary_ra
 				return cumret[index_of(cumret, ret) - 1 :]
 			return larg
 
-def nfind(links, args):
-	larg, rarg = args
-	larg = larg or 0
-	matches = variadic_link(links[1], args) if len(links) == 2 else last_input()
-	found = []
-	while len(found) < matches:
-		if variadic_link(links[0], (larg, rarg)):
-			found.append(larg)
-		larg += 1
-	return found
-
-def not_quicklink(links, outmost_links, index):
-	ret = [attrdict(arity = max(1, links[0].arity))]
-	ret[0].call = lambda x, y = None: int(not variadic_link(links[0], (x, y)))
-	if hasattr(links[0], 'ldepth'):
-		ret[0].ldepth = links[0].ldepth
-	return ret
-
 def map_right(links, outmost_links, index):
 	ret = [attrdict(arity = 2)]
 	if links[0].arity == 2:
@@ -713,6 +695,17 @@ def nCr(left, right):
 		return result
 	return div(Pi(left), Pi(left - right) * Pi(right))
 
+def nfind(links, args):
+	larg, rarg = args
+	larg = larg or 0
+	matches = variadic_link(links[1], args) if len(links) == 2 else last_input()
+	found = []
+	while len(found) < matches:
+		if variadic_link(links[0], (larg, rarg)):
+			found.append(larg)
+		larg += 1
+	return found
+
 def niladic_chain(chain):
 	while len(chain) == 1 and hasattr(chain[0], 'chain'):
 		chain = chain[0].chain
@@ -723,7 +716,14 @@ def niladic_chain(chain):
 def niladic_link(link):
 	return link.call()
 
-def ntimes(links, args, cumulative = False):
+def not_quicklink(links, outmost_links, index):
+	ret = [attrdict(arity = max(1, links[0].arity))]
+	ret[0].call = lambda x, y = None: int(not variadic_link(links[0], (x, y)))
+	if hasattr(links[0], 'ldepth'):
+		ret[0].ldepth = links[0].ldepth
+	return ret
+
+def ntimes(links, args, cumulative = False, vary_rarg = True):
 	ret, rarg = args
 	repetitions = variadic_link(links[1], args) if len(links) == 2 else last_input()
 	repetitions = overload((int, bool), repetitions)
@@ -734,7 +734,8 @@ def ntimes(links, args, cumulative = False):
 			cumret[index] = ret
 		larg = ret
 		ret = variadic_link(links[0], (larg, rarg))
-		rarg = larg
+		if vary_rarg:
+			rarg = larg
 	return cumret + [ret] if cumulative else ret
 
 def odd_even(array):
@@ -1279,7 +1280,7 @@ def unique_key(links, outmost_links, index):
 		ret[0].call = lambda x, y = None: unique_key_trim(links[0], (x, y), n_trim = abs(n_option) + 1)
 	return ret
 
-def unique_key_degenerate(link, args, n_degen = 1, trim = False):
+def unique_key_degenerate(link, args, n_degen = 1):
 	larg, rarg = args
 	array = iterable(larg, make_range = True)
 	result = []
@@ -3014,6 +3015,27 @@ quicks = {
 			call = lambda x = None, y = None: ntimes(links, (x, y))
 		)]
 	),
+	'Ð¡': attrdict(
+		condition = lambda links: len(links) == 2,
+		quicklink = lambda links, outmost_links, index: ([links.pop(0)] if len(links) == 2 and links[0].arity == 0 else []) + [attrdict(
+			arity = max(link.arity for link in links),
+			call = lambda x = None, y = None: ntimes(links, (x, y), cumulative = True)
+		)]
+	),
+	'Ðṇ': attrdict(
+		condition = lambda links: len(links) == 2,
+		quicklink = lambda links, outmost_links, index: ([links.pop(0)] if len(links) == 2 and links[0].arity == 0 else []) + [attrdict(
+			arity = max_arity(links),
+			call = lambda x = None, y = None: ntimes(links, (x, y), vary_rarg = False)
+		)]
+	),
+	'Ðṅ': attrdict(
+		condition = lambda links: len(links) == 2,
+		quicklink = lambda links, outmost_links, index: ([links.pop(0)] if len(links) == 2 and links[0].arity == 0 else []) + [attrdict(
+			arity = max(link.arity for link in links),
+			call = lambda x = None, y = None: ntimes(links, (x, y), cumulative = True, vary_rarg = False)
+		)]
+	),
 	'¿': attrdict(
 		condition = lambda links: len(links) == 2,
 		quicklink = lambda links, outmost_links, index: [attrdict(
@@ -3121,13 +3143,6 @@ quicks = {
 	'⁺': attrdict(
 		condition = lambda links: links,
 		quicklink = lambda links, outmost_links, index: links * 2
-	),
-	'Ð¡': attrdict(
-		condition = lambda links: len(links) == 2,
-		quicklink = lambda links, outmost_links, index: ([links.pop(0)] if len(links) == 2 and links[0].arity == 0 else []) + [attrdict(
-			arity = max(link.arity for link in links),
-			call = lambda x = None, y = None: ntimes(links, (x, y), cumulative = True)
-		)]
 	),
 	'Ð¿': attrdict(
 		condition = lambda links: len(links) == 2,
