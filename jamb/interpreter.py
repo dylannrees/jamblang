@@ -2521,12 +2521,10 @@ atoms = {
 	),
 	'Œr': attrdict(
 		arity = 1,
-		ldepth = 1,
 		call = rle
 	),
 	'Œṙ': attrdict(
 		arity = 1,
-		ldepth = 2,
 		call = rld
 	),
 	'Œs': attrdict(
