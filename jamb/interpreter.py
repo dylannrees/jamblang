@@ -7,7 +7,7 @@ random, sympy, urllib_request = lazy_import('random sympy urllib.request')
 code_page  = '''¡¢£¤¥¦©¬®µ½¿€ÆÇÐÑ×ØŒÞßæçðıȷñ÷øœþ !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~¶'''
 code_page += '''°¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ƁƇƊƑƓƘⱮƝƤƬƲȤɓƈɗƒɠɦƙɱɲƥʠɼʂƭʋȥẠḄḌẸḤỊḲḶṂṆỌṚṢṬỤṾẈỴẒȦḂĊḊĖḞĠḢİĿṀṄȮṖṘṠṪẆẊẎŻạḅḍẹḥịḳḷṃṇọṛṣṭ§Äẉỵẓȧḃċḋėḟġḣŀṁṅȯṗṙṡṫẇẋẏż«»‘’“”'''
 
-# Unused symbols for single-byte atoms/quicks: {}(quƁƘȤɦɲƥʠʂȥḥḳṇẉỵẓėġṅẏ£Ŀŀñ
+# Unused symbols for single-byte atoms/quicks: {}(quƁƘȤɦƥʠʂȥḥḳṇẉỵẓėġṅẏ£Ŀŀñ
 
 str_digit = '0123456789'
 str_lower = 'abcdefghijklmnopqrstuvwxyz'
@@ -535,6 +535,14 @@ def not_quicklink(links, outmost_links, index):
 	ret[0].call = lambda x, y = None: int(not variadic_link(links[0], (x, y)))
 	if hasattr(links[0], 'ldepth'):
 		ret[0].ldepth = links[0].ldepth
+	return ret
+
+def map_right(links, outmost_links, index):
+	ret = [attrdict(arity = 2)]
+	if links[0].arity == 2:
+		ret[0].call = lambda x, y: [dyadic_link(links[0], (x, t)) for t in iterable(y, make_range = True)]
+	else:
+		ret[0].call = lambda x, y: [variadic_link(links[0], (t, x)) for t in iterable(y, make_range = True)]
 	return ret
 
 def matrix_to_list(matrix):
@@ -2988,6 +2996,10 @@ quicks = {
 			call = lambda x, y = None: [variadic_link(links[0], (t, y)) for t in iterable(x, make_range = True)]
 		)]
 	),
+	'Ɱ': attrdict(
+		condition = lambda links: links,
+		quicklink = map_right
+	),
 	'¦': attrdict(
 		condition = lambda links: len(links) == 2,
 		quicklink = lambda links, outmost_links, index: [attrdict(
@@ -3205,10 +3217,6 @@ hypers = {
 	'þ': lambda link, none = None: attrdict(
 		arity = 2,
 		call = lambda x, y: [[dyadic_link(link, (u, v)) for u in iterable(x, make_range = True)] for v in iterable(y, make_range = True)]
-	),
-	'Ɱ': lambda link, none = None: attrdict(
-		arity = max(1, link.arity),
-		call = lambda x, y = None: [variadic_link(link, (x, t)) for t in iterable(y, make_range = True)]
 	),
 	'Ð¢': lambda index, links: attrdict(
 		arity = index.arity,
