@@ -1291,7 +1291,6 @@ def unique_key_trim(link, args, n_trim):
 		n_keep = n_keep * (n_keep > 0)
 		keys_limit[key] = n_keep
 	unique_keys_ret = {}
-	print(keys_limit)
 	for element, key in pairs:
 		limit = keys_limit[key]
 		if not key in unique_keys_ret.keys():
