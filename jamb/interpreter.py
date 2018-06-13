@@ -706,6 +706,37 @@ def nfind(links, args):
 		larg += 1
 	return found
 
+def neighborhood(array, wrap = False, moore = False):
+	neighbor_array = [[0 for item in row] for row in array]
+	height = len(array)
+	width = len(array[0])
+	for i in range(height):
+		for j in range(width):
+			item_neighbors = []
+			if wrap or i - 1 >= 0:
+				if moore and (wrap or j - 1 >= 0):
+					item_neighbors.append(array[i - 1][j - 1])
+				item_neighbors.append(array[i - 1][j])
+				if moore and (wrap or j + 1 < width):
+					item_neighbors.append(array[i - 1][(j + 1) % width])
+			if wrap or j - 1 >= 0:
+				item_neighbors.append(array[i][j - 1])
+			if wrap or j + 1 < width:
+				item_neighbors.append(array[i][(j + 1) % width])
+			if wrap or i + 1 < height:
+				if moore and (wrap or j - 1 >= 0):
+					item_neighbors.append(array[(i + 1) % height][j - 1])
+				item_neighbors.append(array[(i + 1) % height][j])
+				if moore and (wrap or j + 1 < width):
+					item_neighbors.append(array[(i + 1) % height][(j + 1) % width])
+			neighbor_array[i][j] = item_neighbors
+	return neighbor_array
+
+def neighbors(links, array):
+	array = iterable(array, make_digits = True)
+	chain = dyadic_chain if links[-1].arity == 2 else monadic_chain
+	return [chain(links, list(pair)) for pair in zip(array, array[1:])]
+
 def niladic_chain(chain):
 	while len(chain) == 1 and hasattr(chain[0], 'chain'):
 		chain = chain[0].chain
@@ -770,11 +801,6 @@ def integer_partitions(n, I=1):
 		for p in integer_partitions(n-i, i):
 			result.append([i,] + p)
 	return result
-
-def neighbors(links, array):
-	array = iterable(array, make_digits = True)
-	chain = dyadic_chain if links[-1].arity == 2 else monadic_chain
-	return [chain(links, list(pair)) for pair in zip(array, array[1:])]
 
 def partitions(array):
 	array = iterable(array, make_digits = True)
@@ -2460,7 +2486,6 @@ atoms = {
 	),
 	'Œg': attrdict(
 		arity = 1,
-		ldepth = 1,
 		call = group_equal
 	),
 	'ŒH': attrdict(
@@ -2484,6 +2509,26 @@ atoms = {
 	'ŒM': attrdict(
 		arity = 1,
 		call = maximal_indices_md
+	),
+	'ŒṀ': attrdict(
+		arity = 1,
+		ldepth = 2,
+		call = lambda z: neighborhood(z, moore = True, wrap = True)
+	),
+	'ŒṂ': attrdict(
+		arity = 1,
+		ldepth = 2,
+		call = lambda z: neighborhood(z, moore = True)
+	),
+	'ŒṆ': attrdict(
+		arity = 1,
+		ldepth = 2,
+		call = lambda z: neighborhood(z)
+	),
+	'ŒṄ': attrdict(
+		arity = 1,
+		ldepth = 2,
+		call = lambda z: neighborhood(z, wrap = True)
 	),
 	'Œo': attrdict(
 		arity = 1,
@@ -3020,14 +3065,14 @@ quicks = {
 			call = lambda x = None, y = None: ntimes(links, (x, y), cumulative = True)
 		)]
 	),
-	'Ðṇ': attrdict(
+	'ÐṆ': attrdict(
 		condition = lambda links: len(links) == 2,
 		quicklink = lambda links, outmost_links, index: ([links.pop(0)] if len(links) == 2 and links[0].arity == 0 else []) + [attrdict(
 			arity = max_arity(links),
 			call = lambda x = None, y = None: ntimes(links, (x, y), vary_rarg = False)
 		)]
 	),
-	'Ðṅ': attrdict(
+	'ÐṄ': attrdict(
 		condition = lambda links: len(links) == 2,
 		quicklink = lambda links, outmost_links, index: ([links.pop(0)] if len(links) == 2 and links[0].arity == 0 else []) + [attrdict(
 			arity = max(link.arity for link in links),
