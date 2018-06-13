@@ -7,7 +7,7 @@ random, sympy, urllib_request = lazy_import('random sympy urllib.request')
 code_page  = '''¡¢£¤¥¦©¬®µ½¿€ÆÇÐÑ×ØŒÞßæçðıȷñ÷øœþ !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~¶'''
 code_page += '''°¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ƁƇƊƑƓƘⱮƝƤƬƲȤɓƈɗƒɠɦƙɱɲƥʠɼʂƭʋȥẠḄḌẸḤỊḲḶṂṆỌṚṢṬỤṾẈỴẒȦḂĊḊĖḞĠḢİĿṀṄȮṖṘṠṪẆẊẎŻạḅḍẹḥịḳḷṃṇọṛṣṭ§Äẉỵẓȧḃċḋėḟġḣŀṁṅȯṗṙṡṫẇẋẏż«»‘’“”'''
 
-# Unused symbols for single-byte atoms/quicks: {}(quƁƘȤɦƥʠʂȥḥḳṇẉỵẓėġṅẏ£Ŀŀñ
+# Unused symbols for single-byte atoms/quicks: {}(quƁƘȤɦƥʠʂȥḥḳṇẉỵẓėġṅẏ£ŀñ
 
 str_digit = '0123456789'
 str_lower = 'abcdefghijklmnopqrstuvwxyz'
@@ -1718,6 +1718,10 @@ atoms = {
 		ldepth = 0,
 		call = lambda z: list(range(int(z)))
 	),
+	'Ŀ': attrdict(
+		arity = 1,
+		call = lambda z: [0] + iterable(z, make_range = True)
+	),
 	'l': attrdict(
 		arity = 2,
 		ldepth = 0,
@@ -1993,7 +1997,7 @@ atoms = {
 	),
 	'Ż': attrdict(
 		arity = 1,
-		call = lambda z: [0] + iterable(z, make_range = True)
+		call = lambda z: jambify(itertools.permutations(iterable(z, make_range = True)))
 	),
 	'z': attrdict(
 		arity = 2,
@@ -2406,10 +2410,6 @@ atoms = {
 		arity = 1,
 		ldepth = 1,
 		call = from_primorial_base
-	),
-	'Œ!': attrdict(
-		arity = 1,
-		call = lambda z: jambify(itertools.permutations(iterable(z, make_range = True)))
 	),
 	'Œ?': attrdict(
 		arity = 1,
