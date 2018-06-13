@@ -211,6 +211,25 @@ def dyadic_ion(link, args, conv = True, lflat = False, rflat = False):
 		return [dyadic_ion(link, (x, rarg)) for x in larg]
 	return [dyadic_ion(link, (x, y)) for x, y in zip(*args)] + larg[len(rarg):] + rarg[len(larg):]
 
+def dyadic_link_flip(link, args, conv = True, lflat = False, rflat = False, last_ion = False):
+	try:
+		result = dyadic_ion(ion, args, conv = conv, lflat = lflat, rflat = rflat)
+		return result
+	except:
+		pass
+	if not last_ion:
+		try:
+			result = dyadic_ion(ion, args[::-1], conv = conv, lflat = lflat, rflat = rflat)
+			return result
+		except:
+			pass
+	else:
+		return dyadic_ion(link, args[::-1], conv = conv, lflat = lflat, rflat = rflat)
+
+
+
+
+
 def dyadic_link(link, args, conv = True, lflat = False, rflat = False):
 	if not hasattr(link, 'ions'):
 		return dyadic_ion(link, args, conv = conv, lflat = lflat, rflat = rflat)
@@ -1432,6 +1451,7 @@ def output(argument, end = '', transform = stringify):
 def zip_ragged(array):
 	return jambify(map(lambda t: filter(None.__ne__, t), itertools.zip_longest(*map(iterable, array))))
 
+
 atoms = {
 	'³': attrdict(
 		arity = 0,
@@ -2157,6 +2177,7 @@ atoms = {
 		attrdict(
 			ldepth = 1,
 			rdepth = 0,
+			flipargs = True,
 			call = lambda x, y: x + [' '] * (y - len(x))
 		)]
 	),
@@ -2171,6 +2192,7 @@ atoms = {
 		attrdict(
 			ldepth = 1,
 			rdepth = 0,
+			flipargs = True,
 			call = lambda x, y: [' '] * (y - len(x)) + x
 		)]
 	),
