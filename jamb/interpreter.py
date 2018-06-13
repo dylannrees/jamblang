@@ -1432,7 +1432,6 @@ def output(argument, end = '', transform = stringify):
 def zip_ragged(array):
 	return jambify(map(lambda t: filter(None.__ne__, t), itertools.zip_longest(*map(iterable, array))))
 
-
 atoms = {
 	'³': attrdict(
 		arity = 0,
@@ -2149,9 +2148,17 @@ atoms = {
 	),
 	'«': attrdict(
 		arity = 2,
-		ldepth = 0,
-		rdepth = 0,
-		call = min
+		ions = [
+		attrdict(
+			ldepth = 0,
+			rdepth = 0,
+			call = min
+		),
+		attrdict(
+			ldepth = 1,
+			rdepth = 0,
+			call = lambda x, y: x + [' '] * (y - len(x))
+		)]
 	),
 	'»': attrdict(
 		arity = 2,
@@ -2164,7 +2171,7 @@ atoms = {
 		attrdict(
 			ldepth = 1,
 			rdepth = 0,
-			call = lambda x, y: x if len(x) >= y else ([' '] * (len(x) - y) + x)
+			call = lambda x, y: [' '] * (y - len(x)) + x
 		)]
 	),
 	'⁼': attrdict(
@@ -2181,10 +2188,7 @@ atoms = {
 	),
 	'¹': attrdict(
 		arity = 1,
-		ions = [
-		attrdict(
-			call = identity
-		)]
+		call = identity
 	),
 	'ÆA': attrdict(
 		arity = 1,
