@@ -30,7 +30,7 @@ def at_index(index, array):
 		return array[low_index % len(array)]
 	return [array[low_index % len(array)], array[high_index % len(array)]]
 
-def at_index_ndim(indices, array):
+def at_index_md(indices, array):
 	retval = array
 	for index in indices:
 		retval = at_index(index, retval)
@@ -2517,11 +2517,6 @@ atoms = {
 		arity = 1,
 		call = lambda z: split_evenly(iterable(z, make_range = True), 2)
 	),
-	'œị': attrdict(
-		arity = 2,
-		ldepth = 1,
-		call = at_index_ndim
-	),
 	'ŒJ': attrdict(
 		arity = 1,
 		call = indices_md
@@ -2627,7 +2622,7 @@ atoms = {
 	),
 	'ŒỤ': attrdict(
 		arity = 1,
-		call = lambda z: sorted(indices_md(iterable(z)), key = lambda t: at_index_ndim(t, iterable(z)))
+		call = lambda z: sorted(indices_md(iterable(z)), key = lambda t: at_index_md(t, iterable(z)))
 	),
 	'Œu': attrdict(
 		arity = 1,
@@ -2770,6 +2765,11 @@ atoms = {
 	'œi': attrdict(
 		arity = 2,
 		call = index_of_md
+	),
+	'œị': attrdict(
+		arity = 2,
+		ldepth = 1,
+		call = at_index_md
 	),
 	'œl': attrdict(
 		arity = 2,
