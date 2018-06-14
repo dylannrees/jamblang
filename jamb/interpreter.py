@@ -211,40 +211,38 @@ def dyadic_ion(link, args, conv = True, lflat = False, rflat = False):
 		return [dyadic_ion(link, (x, rarg)) for x in larg]
 	return [dyadic_ion(link, (x, y)) for x, y in zip(*args)] + larg[len(rarg):] + rarg[len(larg):]
 
-def dyadic_link_flip(link, args, conv = True, lflat = False, rflat = False, last_ion = False):
-	try:
-		result = dyadic_ion(ion, args, conv = conv, lflat = lflat, rflat = rflat)
-		return result
-	except:
-		pass
-	if not last_ion:
-		try:
-			result = dyadic_ion(ion, args[::-1], conv = conv, lflat = lflat, rflat = rflat)
-			return result
-		except:
-			pass
-	else:
-		return dyadic_ion(link, args[::-1], conv = conv, lflat = lflat, rflat = rflat)
-
-
-
-
-
 def dyadic_link(link, args, conv = True, lflat = False, rflat = False):
 	if not hasattr(link, 'ions'):
+		if hasattr(link, 'flipargs') and link.flipargs:
+			return dyadic_link_flip(link, args, conv = conv, lflat = lflat, rflat = rflat)
 		return dyadic_ion(link, args, conv = conv, lflat = lflat, rflat = rflat)
 	ions = link.ions
 	while ions:
 		ion = ions[0]
 		ions = ions[1:]
 		if ions:
-			try:
-				result = dyadic_ion(ion, args, conv = conv, lflat = lflat, rflat = rflat)
-				return result
-			except:
-				pass
+			if hasattr(ion, 'flipargs') and ion.flipargs:
+				try:
+					result = dyadic_link_flip(ion, args, conv = conv, lflat = lflat, rflat = rflat)
+					return result
+				except:
+					pass
+			else:
+				try:
+					result = dyadic_ion(ion, args, conv = conv, lflat = lflat, rflat = rflat)
+					return result
+				except:
+					pass
 		else:
+			if hasattr(ion, 'flipargs') and ion.flipargs:
+				return dyadic_link_flip(ion, args, conv = conv, lflat = lflat, rflat = rflat)
 			return dyadic_ion(ion, args, conv = conv, lflat = lflat, rflat = rflat)
+
+def dyadic_link_flip(link, args, conv = True, lflat = False, rflat = False):
+	try:
+		return dyadic_ion(link, args, conv = conv, lflat = lflat, rflat = rflat)
+	except:
+		return dyadic_ion(link, args[::-1], conv = conv, lflat = lflat, rflat = rflat)
 
 def eigenval_of(links, outmost_links, index):
 	ret = [attrdict(arity = max(1, links[0].arity))]
@@ -1775,6 +1773,7 @@ atoms = {
 	'ṃ': attrdict(
 		arity = 2,
 		ldepth = 0,
+		flipargs = True,
 		call = base_decompression
 	),
 	'N': attrdict(
