@@ -769,6 +769,8 @@ def not_quicklink(links, outmost_links, index):
 	ret[0].call = lambda x, y = None: int(not variadic_link(links[0], (x, y)))
 	if hasattr(links[0], 'ldepth'):
 		ret[0].ldepth = links[0].ldepth
+	if hasattr(links[0], 'rdepth'):
+		ret[0].rdepth = links[0].rdepth
 	return ret
 
 def ntimes(links, args, cumulative = False, vary_rarg = True):
