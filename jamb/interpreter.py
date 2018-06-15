@@ -7,7 +7,7 @@ random, sympy, urllib_request = lazy_import('random sympy urllib.request')
 code_page  = '''¡¢£¤¥¦©¬®µ½¿€ÆÇÐÑ×ØŒÞßæçðıȷñ÷øœþ !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~¶'''
 code_page += '''°¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ƁƇƊƑƓƘⱮƝƤƬƲȤɓƈɗƒɠɦƙɱɲƥʠɼʂƭʋȥẠḄḌẸḤỊḲḶṂṆỌṚṢṬỤṾẈỴẒȦḂĊḊĖḞĠḢİĿṀṄȮṖṘṠṪẆẊẎŻạḅḍẹḥịḳḷṃṇọṛṣṭ§Äẉỵẓȧḃċḋėḟġḣŀṁṅȯṗṙṡṫẇẋẏż«»‘’“”'''
 
-# Unused symbols for single-byte atoms/quicks: {}(quƁƘȤɦƥʠʂȥḥḳṇẉỵẓėġṅẏ£ŀñ
+# Unused symbols for single-byte atoms/quicks: {}(quƁƘȤɦƥʠʂȥḥḳṇẉỵẓėġṅẏ£ŀñ°
 
 str_digit = '0123456789'
 str_lower = 'abcdefghijklmnopqrstuvwxyz'
@@ -2149,11 +2149,6 @@ atoms = {
 		ldepth = 0,
 		call = lambda z: overload((math.sqrt, cmath.sqrt), z)
 	),
-	'°': attrdict(
-		arity = 1,
-		ldepth = 0,
-		call = math.radians
-	),
 	'¬': attrdict(
 		arity = 1,
 		ldepth = 0,
@@ -2419,6 +2414,11 @@ atoms = {
 		arity = 1,
 		ldepth = 0,
 		call = math.degrees
+	),
+	'Æ⁹': attrdict(
+		arity = 1,
+		ldepth = 0,
+		call = math.radians
 	),
 	'Æ!': attrdict(
 		arity = 1,
