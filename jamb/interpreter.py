@@ -249,6 +249,8 @@ def eigenval_of(links, outmost_links, index):
 	ret[0].call = lambda x, y = None: int(x == variadic_link(links[0], (x, y)))
 	if hasattr(links[0], 'ldepth'):
 		ret[0].ldepth = links[0].ldepth
+	if hasattr(links[0], 'rdepth'):
+		ret[0].rdepth = links[0].rdepth
 	return ret
 
 def enumerate_md(array, upper_level = []):
