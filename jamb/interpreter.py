@@ -7,7 +7,7 @@ random, sympy, urllib_request = lazy_import('random sympy urllib.request')
 code_page  = '''¡¢£¤¥¦©¬®µ½¿€ÆÇÐÑ×ØŒÞßæçðıȷñ÷øœþ !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~¶'''
 code_page += '''°¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ƁƇƊƑƓƘⱮƝƤƬƲȤɓƈɗƒɠɦƙɱɲƥʠɼʂƭʋȥẠḄḌẸḤỊḲḶṂṆỌṚṢṬỤṾẈỴẒȦḂĊḊĖḞĠḢİĿṀṄȮṖṘṠṪẆẊẎŻạḅḍẹḥịḳḷṃṇọṛṣṭ§Äẉỵẓȧḃċḋėḟġḣŀṁṅȯṗṙṡṫẇẋẏż«»‘’“”'''
 
-# Unused symbols for single-byte atoms/quicks: {}(quƁƘȤɦƥʠʂȥḥḳṇẉỵẓėġṅẏ£ŀñ°
+# Unused symbols for single-byte atoms/quicks: {}(quƁƘȤɦƥʠʂȥḥḳṇẉỵẓġṅẏ£ŀñ°
 
 str_digit = '0123456789'
 str_lower = 'abcdefghijklmnopqrstuvwxyz'
@@ -427,6 +427,11 @@ def index_of(haystack, needle):
 		if item == needle:
 			return 1 + index
 	return 0
+
+def index_of_vect(haystack, needle):
+	ion = attrdict(call = index_of)
+	ion.rdepth = depth(iterable(haystack)) - 1
+	return dyadic_ion(ion, (haystack, needle))
 
 def index_of_md(haystack, needle):
 	for index, item in enumerate_md(haystack):
@@ -1621,6 +1626,10 @@ atoms = {
 		arity = 2,
 		call = lambda x, y: [t + 1 for t, u in enumerate(iterable(x, make_digits = True)) if u == y]
 	),
+	'ė': attrdict(
+		arity = 2,
+		call = index_of
+	),
 	'F': attrdict(
 		arity = 1,
 		call = flatten
@@ -1675,7 +1684,7 @@ atoms = {
 	'Ḥ': attrdict(
 		arity = 1,
 		ldepth = 0,
-		call = lambda z: z * 2
+		call = lambda z: [z, z] if type(z) == str else z * 2
 	),
 	'Ḣ': attrdict(
 		arity = 1,
@@ -1701,18 +1710,19 @@ atoms = {
 		ldepth = 0,
 		call = lambda z: overload((lambda z: int(abs(z) <= 1), lambda z: chr(ord(z) - 1)), z)
 	),
-	'J': attrdict(
-		arity = 1,
-		call = lambda z: list(range(1, len(iterable(z)) + 1))
-	),
 	'i': attrdict(
 		arity = 2,
-		call = index_of
+		call = index_of_vect
 	),
 	'ị': attrdict(
 		arity = 2,
 		ldepth = 0,
+		flipargs = True,
 		call = at_index
+	),
+	'J': attrdict(
+		arity = 1,
+		call = lambda z: list(range(1, len(iterable(z)) + 1))
 	),
 	'j': attrdict(
 		arity = 2,
