@@ -1,6 +1,6 @@
 # Jamb
 
-Jamb is an experimental version of Jelly. New features include variable depth atoms and automatic argument swapping for some dyads.
+Jamb is an experimental version of [Jelly][1], a tacit golfing language written by Dennis Mitchell. New features include variable depth atoms and automatic argument swapping for some dyads.
 
 ## New features in Jamb and differences from Jelly
 
@@ -8,9 +8,9 @@ Jamb is an experimental version of Jelly. New features include variable depth at
 
 Atoms can now have variable depth. Previously, the only way to overload atoms was by doing it within each atom's call. Now, atoms can have a list of "sub-atoms" called ions each of which have their own vectorization depths and calls.
 
-For example, the first ion of the atom `»` is to return the greater of it's two arguments at depth zero on both sides. This works when the two arguments are of the same type, but errors when given a string and an integer. This was the atom's only behavior in Jelly. In Jamb, when the first ion errors, the second ion is tried. If given `abc` and `5` as its arguments, the atom will then change it's left argument's depth to one and try to left pad it to length equal to the right argument. E.g. `“abc”»5` will return `'  abc'` (`»` looks like the string `“abc”` is being shifted to the right). Equivalently, `«` right pads.
+For example, the first ion of the atom `»` is to return the greater of it's two arguments at depth zero on both sides. This works when the two arguments are of the same type, but errors when given a string and an integer. This was the atom's only behavior in Jelly. In Jamb, when the first ion errors, the second ion is tried. If given `abc` and `5` as its arguments, the atom will then change it's left argument's depth to one and try to left pad it to length equal to the right argument. E.g. `“abc”»5` will return `'  abc'` (`“abc”»` looks like the string `“abc”` is being shifted to the right). Equivalently, `«` right pads.
 
-In Jelly at point at which Jamb diverged, there was only one single byte dyad that had depths **1** and **0**, so it was not possible to overload existing single byte atoms to include both a left padding atom and a right padding atom without taking up unused bytes.
+At the point in Jelly at which Jamb diverged, there was only one single byte dyad that had depths **1** and **0**, so it was not possible to overload existing single byte atoms to include both a left padding atom and a right padding atom without taking up unused bytes.
 
 ### Argument swapping for dyads
 
@@ -29,3 +29,5 @@ Dyads can now be given `swapargs = True`, which specifies that when a dyad error
 - `Ŀ` is now prepend zero, or **[0..z]** for integers.
 - `Ż` is now all permutations of **z**.
 - There are also new atoms and quicks which won't necessarily be added here. Jamb has its own atoms/quicks/etc. pages so all features can be documented somewhere.
+
+[1]: https://github.com/DennisMitchell/jellylanguage

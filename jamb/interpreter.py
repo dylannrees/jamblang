@@ -213,7 +213,7 @@ def dyadic_ion(link, args, conv = True, lflat = False, rflat = False):
 
 def dyadic_link(link, args, conv = True, lflat = False, rflat = False):
 	if not hasattr(link, 'ions'):
-		if hasattr(link, 'flipargs') and link.flipargs:
+		if hasattr(link, 'swapargs') and link.swapargs:
 			return dyadic_link_flip(link, args, conv = conv, lflat = lflat, rflat = rflat)
 		return dyadic_ion(link, args, conv = conv, lflat = lflat, rflat = rflat)
 	ions = link.ions
@@ -221,7 +221,7 @@ def dyadic_link(link, args, conv = True, lflat = False, rflat = False):
 		ion = ions[0]
 		ions = ions[1:]
 		if ions:
-			if hasattr(ion, 'flipargs') and ion.flipargs:
+			if hasattr(ion, 'swapargs') and ion.swapargs:
 				try:
 					result = dyadic_link_flip(ion, args, conv = conv, lflat = lflat, rflat = rflat)
 					return result
@@ -234,7 +234,7 @@ def dyadic_link(link, args, conv = True, lflat = False, rflat = False):
 				except:
 					pass
 		else:
-			if hasattr(ion, 'flipargs') and ion.flipargs:
+			if hasattr(ion, 'swapargs') and ion.swapargs:
 				return dyadic_link_flip(ion, args, conv = conv, lflat = lflat, rflat = rflat)
 			return dyadic_ion(ion, args, conv = conv, lflat = lflat, rflat = rflat)
 
@@ -1726,7 +1726,7 @@ atoms = {
 	'ị': attrdict(
 		arity = 2,
 		ldepth = 0,
-		flipargs = True,
+		swapargs = True,
 		call = at_index
 	),
 	'J': attrdict(
@@ -1796,7 +1796,7 @@ atoms = {
 	'ṃ': attrdict(
 		arity = 2,
 		ldepth = 0,
-		flipargs = True,
+		swapargs = True,
 		call = base_decompression
 	),
 	'N': attrdict(
@@ -1891,7 +1891,7 @@ atoms = {
 	'ṙ': attrdict(
 		arity = 2,
 		rdepth = 0,
-		flipargs = True
+		swapargs = True
 		call = rotate_left
 	),
 	'ṛ': attrdict(
@@ -2195,7 +2195,7 @@ atoms = {
 		attrdict(
 			ldepth = 1,
 			rdepth = 0,
-			flipargs = True,
+			swapargs = True,
 			call = lambda x, y: x + [' '] * (y - len(x))
 		)]
 	),
@@ -2210,7 +2210,7 @@ atoms = {
 		attrdict(
 			ldepth = 1,
 			rdepth = 0,
-			flipargs = True,
+			swapargs = True,
 			call = lambda x, y: [' '] * (y - len(x)) + x
 		)]
 	),
