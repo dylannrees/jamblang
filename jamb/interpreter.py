@@ -1519,13 +1519,26 @@ atoms = {
 	),
 	'B': attrdict(
 		arity = 1,
-		ldepth = 0,
-		call = lambda z: to_base(z, 2)
+		ions = [
+		attrdict(
+			ldepth = 0,
+			call = lambda z: to_base(z, 2)
+		),
+		attrdict(
+			ldepth = 1,
+			call = bounce
+		)]
 	),
 	'Ḅ': attrdict(
 		arity = 1,
-		ldepth = 1,
-		call = lambda z: from_base(z, 2)
+		ions = [
+		attrdict(
+			ldepth = 1,
+			call = lambda z: from_base(z, 2)
+		),
+		attrdict(
+			call = lambda z: bounce(iterable(z, make_range = True))
+		)]
 	),
 	'Ḃ': attrdict(
 		arity = 1,
@@ -1878,6 +1891,7 @@ atoms = {
 	'ṙ': attrdict(
 		arity = 2,
 		rdepth = 0,
+		flipargs = True
 		call = rotate_left
 	),
 	'ṛ': attrdict(
