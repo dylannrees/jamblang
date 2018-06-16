@@ -7,7 +7,7 @@ random, sympy, urllib_request = lazy_import('random sympy urllib.request')
 code_page  = '''¡¢£¤¥¦©¬®µ½¿€ÆÇÐÑ×ØŒÞßæçðıȷñ÷øœþ !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~¶'''
 code_page += '''°¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ƁƇƊƑƓƘⱮƝƤƬƲȤɓƈɗƒɠɦƙɱɲƥʠɼʂƭʋȥẠḄḌẸḤỊḲḶṂṆỌṚṢṬỤṾẈỴẒȦḂĊḊĖḞĠḢİĿṀṄȮṖṘṠṪẆẊẎŻạḅḍẹḥịḳḷṃṇọṛṣṭ§Äẉỵẓȧḃċḋėḟġḣŀṁṅȯṗṙṡṫẇẋẏż«»‘’“”'''
 
-# Unused symbols for single-byte atoms/quicks: {}(quƁƘȤɦƥʠʂȥḥḳṇẉỵẓġṅẏ£ŀñ°
+# Unused symbols for single-byte atoms/quicks: {}(quƁƘȤɦƥʠʂȥḥḳṇẉỵẓėġṅẏ£ŀñ°
 
 str_digit = '0123456789'
 str_lower = 'abcdefghijklmnopqrstuvwxyz'
@@ -1625,10 +1625,6 @@ atoms = {
 	'ẹ': attrdict(
 		arity = 2,
 		call = lambda x, y: [t + 1 for t, u in enumerate(iterable(x, make_digits = True)) if u == y]
-	),
-	'ė': attrdict(
-		arity = 2,
-		call = index_of
 	),
 	'F': attrdict(
 		arity = 1,
