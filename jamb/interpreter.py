@@ -1028,14 +1028,24 @@ def rld(runs):
 	return list(itertools.chain(*[[u] * v for u, v in runs]))
 
 def rld_zoom(runs):
-	input_depth = depth(runs)
 	ion = attrdict(call = rld)
-	for ldepth in range(input_depth, 0, -1):
-		try:
+	input_depth = depth(runs)
+	while input_depth < 2:
+		runs = [runs]
+		input_depth += 1
+	depth_range = range(2, input_depth + 1)
+	while depth_range:
+		ldepth = depth_range[0]
+		depth_range = depth_range[1:]
+		if depth_range:
+			try:
+				ion.ldepth = ldepth
+				return monadic_ion(ion, runs)
+			except:
+				pass
+		else:
 			ion.ldepth = ldepth
 			return monadic_ion(ion, runs)
-		except:
-			pass
 
 def rle(array):
 	return [[group[0], len(group)] for group in group_equal(array)]
