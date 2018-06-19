@@ -1027,6 +1027,16 @@ def reduce_cumulative(links, outmost_links, index):
 def rld(runs):
 	return list(itertools.chain(*[[u] * v for u, v in runs]))
 
+def rld_zoom(runs):
+	input_depth = depth(runs)
+	ion = attrdict(call = rld)
+	for ldepth in range(input_depth, 0, -1):
+		try:
+			ion.ldepth = ldepth
+			return monadic_ion(ion, runs)
+		except:
+			pass
+
 def rle(array):
 	return [[group[0], len(group)] for group in group_equal(array)]
 
@@ -1891,7 +1901,7 @@ atoms = {
 	'ṙ': attrdict(
 		arity = 2,
 		rdepth = 0,
-		swapargs = True
+		swapargs = True,
 		call = rotate_left
 	),
 	'ṛ': attrdict(
@@ -2614,7 +2624,7 @@ atoms = {
 	),
 	'Œṙ': attrdict(
 		arity = 1,
-		call = rld
+		call = rld_zoom
 	),
 	'Œs': attrdict(
 		arity = 1,
