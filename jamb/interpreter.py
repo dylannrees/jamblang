@@ -7,7 +7,7 @@ random, sympy, urllib_request = lazy_import('random sympy urllib.request')
 code_page  = '''¡¢£¤¥¦©¬®µ½¿€ÆÇÐÑ×ØŒÞßæçðıȷñ÷øœþ !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~¶'''
 code_page += '''°¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ƁƇƊƑƓƘⱮƝƤƬƲȤɓƈɗƒɠɦƙɱɲƥʠɼʂƭʋȥẠḄḌẸḤỊḲḶṂṆỌṚṢṬỤṾẈỴẒȦḂĊḊĖḞĠḢİĿṀṄȮṖṘṠṪẆẊẎŻạḅḍẹḥịḳḷṃṇọṛṣṭ§Äẉỵẓȧḃċḋėḟġḣŀṁṅȯṗṙṡṫẇẋẏż«»‘’“”'''
 
-# Unused symbols for single-byte atoms/quicks: {}(quƁƘȤɦƥʠʂȥḥḳṇẉỵẓėġṅẏ£ŀñ°
+# Unused symbols for single-byte atoms/quicks: {}(quƁƘȤɦʠʂȥḥḳṇẉỵẓėġṅẏ£ŀñ°
 
 str_digit = '0123456789'
 str_lower = 'abcdefghijklmnopqrstuvwxyz'
@@ -1022,6 +1022,39 @@ def reduce_cumulative(links, outmost_links, index):
 		ret[0].call = lambda t: list(itertools.accumulate(iterable(t), lambda x, y: dyadic_link(links[0], (x, y))))
 	else:
 		ret[0].call = lambda z: [reduce_simple(t, links[0]) for t in split_rolling(iterable(z), links[1].call())]
+	return ret
+
+def replace_sublist(lst, sublst, replacement):
+	result = lst
+	lensub = len(sublst)
+	i = 0
+	while i <= len(lst) - lensub:
+		if result[i: i + lensub] == sublst:
+			result[i: i + lensub] = replacement
+			i += len(replacement)
+		else:
+			i += 1
+	return result
+
+def replace_quickcall(links, args):
+	larg, rarg = args
+	sublists = variadic_link(links[0], (larg, rarg))
+	replacements = variadic_link(links[1], (larg, rarg))
+	rep_list_args = []
+	for patterns in [sublists, replacements]:
+		if type(patterns) == list and type(patterns[0]) != list:
+			patterns = [[item] for item in patterns]
+		elif type(patterns) != list:
+			patterns = [[patterns]]
+		rep_list_args.append(patterns)
+	sublists, replacements = rep_list_args
+	n_sublists = len(sublists)
+	n_repls = len(replacements)
+	ret = larg
+	for i in range(max(n_sublists, n_repls)):
+		sublist = sublists[i % n_sublists]
+		replacement = replacements[i % n_repls]
+		ret = replace_sublist(ret, sublist, replacement)
 	return ret
 
 def rld(runs):
@@ -3236,6 +3269,13 @@ quicks = {
 		quicklink = lambda links, outmost_links, index: [attrdict(
 			arity = max(1, links[0].arity),
 			call = lambda x, y = None: sorted(iterable(x, make_range = True), key = lambda t: variadic_link(links[0], (t, y)))
+		)]
+	),
+	'ƥ': attrdict(
+		condition = lambda links: len(links) == 2,
+		quicklink = lambda links, outmost_links, index: [attrdict(
+			arity = max(1, *[link.arity for link in links]),
+			call = lambda x, y = None: replace_quickcall(links, (x, y))
 		)]
 	),
 	'ɼ': attrdict(
