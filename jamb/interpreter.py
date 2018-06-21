@@ -1706,7 +1706,6 @@ atoms = {
 			call = lambda z: div(z, 2)
 		),
 		attrdict(
-			ldepth = 1,
 			call = lambda z: z + [z[0]]
 		)]
 	),
@@ -2440,6 +2439,11 @@ atoms = {
 		ldepth = 0,
 		call = lambda z: len(sympy.ntheory.factor_.factorint(z))
 	),
+	'Æ+': attrdict(
+		arity = 1,
+		ldepth = 0,
+		call = lambda z: sum(to_base(z, 10))
+	),
 	'Æ²': attrdict(
 		arity = 1,
 		ldepth = 0,
@@ -2673,6 +2677,11 @@ atoms = {
 		ldepth = 1,
 		call = lambda z: to_case(z, upper = True)
 	),
+	'Œ:': attrdict(
+		arity = 1,
+		ldepth = 1,
+		call = lambda z: [0] + z + [0]
+	),
 	'Œœ': attrdict(
 		arity = 1,
 		call = odd_even
@@ -2720,11 +2729,17 @@ atoms = {
 		rdepth = 0,
 		call = math.atan2
 	),
-	'æR': attrdict(
+	'æḄ': attrdict(
 		arity = 2,
 		ldepth = 0,
 		rdepth = 0,
-		call = primerange
+		call = lambda x, y: (x + y + 1) % 2
+	),
+	'æḂ': attrdict(
+		arity = 2,
+		ldepth = 0,
+		rdepth = 0,
+		call = lambda x, y: (x + y) % 2
 	),
 	'æC': attrdict(
 		arity = 2,
@@ -2767,6 +2782,12 @@ atoms = {
 		ldepth = 0,
 		rdepth = 0,
 		call = lcm
+	),
+	'æR': attrdict(
+		arity = 2,
+		ldepth = 0,
+		rdepth = 0,
+		call = primerange
 	),
 	'ær': attrdict(
 		arity = 2,
@@ -2857,6 +2878,11 @@ atoms = {
 		arity = 2,
 		call = lambda x, y: jambify(split_around(iterable(x, make_digits = True), iterable(y)))
 	),
+	'œ:': attrdict(
+		arity = 2,
+		ldepth = 1,
+		call = lambda x, y: [y] + x + [y]
+	),
 	'œ&': attrdict(
 		arity = 2,
 		call = multiset_intersect
@@ -2900,6 +2926,14 @@ atoms = {
 	'Ø-': attrdict(
 		arity = 0,
 		call = lambda: [-1, 1]
+	),
+	'ØỊ': attrdict(
+		arity = 0,
+		call = lambda: [-1, 0, 1]
+	),
+	'Øİ': attrdict(
+		arity = 0,
+		call = lambda: [1, 0, -1]
 	),
 	'Ø(': attrdict(
 		arity = 0,
