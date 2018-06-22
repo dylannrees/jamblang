@@ -813,13 +813,18 @@ def order(number, divisor):
 	return ret
 
 def overload(operators, *args):
-	for operator in operators:
-		try:
-			ret = operator(*args)
-		except:
-			pass
+	while operators:
+		operator = operators[0]
+		operators = operators[1:]
+		if operators:
+			try:
+				ret = operator(*args)
+			except:
+				pass
+			else:
+				return ret
 		else:
-			return ret
+			return operator(*args)
 
 def integer_partitions(n, I=1):
 	result = [[n,]]
@@ -1648,7 +1653,9 @@ atoms = {
 	'Ḍ': attrdict(
 		arity = 1,
 		ldepth = 1,
-		call = lambda z: from_base(z, 10)
+		call = lambda z: overload([lambda z: from_base(z, 10),
+		 				 		   lambda z: [item for item in z if item in list(str_digit)]
+						 	   	  ], z)
 	),
 	'Ḋ': attrdict(
 		arity = 1,
