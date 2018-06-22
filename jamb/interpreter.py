@@ -1991,7 +1991,10 @@ atoms = {
 	'Ṭ': attrdict(
 		arity = 1,
 		ldepth = 1,
-		call = lambda z: [int(t + 1 in iterable(z)) for t in range(max(iterable(z) or [0]))]
+		call = lambda z: overload([
+						lambda z: [int(t + 1 in iterable(z)) for t in range(max(iterable(z) or [0]))],
+						lambda z: z + [z[-1]]
+						], z)
 	),
 	'Ṫ': attrdict(
 		arity = 1,
@@ -2716,6 +2719,11 @@ atoms = {
 		arity = 1,
 		ldepth = 1,
 		call = lambda z: to_case(z, upper = True)
+	),
+	'ŒẎ': attrdict(
+		arity = 1,
+		ldepth = 2,
+		call = lambda z: sum(map(iterable, iterable(z)), [])
 	),
 	'Œ:': attrdict(
 		arity = 1,
