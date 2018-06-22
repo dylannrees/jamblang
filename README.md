@@ -16,6 +16,8 @@ At the point in Jelly at which Jamb diverged, there was only one single byte dya
 
 Dyads can now be given `swapargs = True`, which specifies that when a dyad errors with left and right arguments **x** and **y**, Jamb should attempt to apply the atom with two arguments switched. This means that when using the left padding ion of `»`, you'll never need to write `»@` because both `“abc”»5` and `5»“abc”` return the same thing.
 
+  - Should this be default behavior for all dyadic links?
+
 ### More changes
 
 - `@` now turns monads into dyads which use the right argument. Same behavior for dyads. This frees `}`.
