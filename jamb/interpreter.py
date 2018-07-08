@@ -1516,7 +1516,6 @@ def output(argument, end = '', transform = stringify):
 def zip_ragged(array):
 	return jambify(map(lambda t: filter(None.__ne__, t), itertools.zip_longest(*map(iterable, array))))
 
-
 atoms = {
 	'³': attrdict(
 		arity = 0,
@@ -2737,6 +2736,16 @@ atoms = {
 	'Œɠ': attrdict(
 		arity = 1,
 		call = group_lengths
+	),
+	'Œ‘': attrdict(
+		arity = 1,
+		ldepth = 0,
+		call = lambda z: int(z) + 1
+	),
+	'Œ’': attrdict(
+		arity = 1,
+		ldepth = 0,
+		call = lambda z: math.ceil(z) - 1
 	),
 	'œ?': attrdict(
 		arity = 2,
