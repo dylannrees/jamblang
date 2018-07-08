@@ -1654,7 +1654,7 @@ atoms = {
 		arity = 1,
 		ldepth = 1,
 		call = lambda z: overload([lambda z: from_base(z, 10),
-		 				 		   lambda z: [item for item in z if item in list(str_digit)]
+		 				 		   lambda z: [item for item in z if (item in list(str_digit) or type(item) != str)]
 						 	   	  ], z)
 	),
 	'Ḋ': attrdict(
