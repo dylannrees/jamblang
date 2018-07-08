@@ -2526,6 +2526,16 @@ atoms = {
 		ldepth = 1,
 		call = from_primorial_base
 	),
+	'Æ‘': attrdict(
+		arity = 1,
+		ldepth = 0,
+		call = lambda z: int(z) + 1
+	),
+	'Æ’': attrdict(
+		arity = 1,
+		ldepth = 0,
+		call = lambda z: math.ceil(z) - 1
+	),
 	'Œ?': attrdict(
 		arity = 1,
 		ldepth = 0,
@@ -2736,16 +2746,6 @@ atoms = {
 	'Œɠ': attrdict(
 		arity = 1,
 		call = group_lengths
-	),
-	'Œ‘': attrdict(
-		arity = 1,
-		ldepth = 0,
-		call = lambda z: int(z) + 1
-	),
-	'Œ’': attrdict(
-		arity = 1,
-		ldepth = 0,
-		call = lambda z: math.ceil(z) - 1
 	),
 	'œ?': attrdict(
 		arity = 2,
