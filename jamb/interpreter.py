@@ -2301,6 +2301,16 @@ atoms = {
 		ldepth = 0,
 		call = lambda z: overload((math.cos, cmath.cos), z)
 	),
+	'ÆḄ': attrdict(
+		arity = 1,
+		ldepth = 0,
+		call = lambda z: (z % 2) * -2 + 1
+	),
+	'ÆḂ': attrdict(
+		arity = 1,
+		ldepth = 0,
+		call = lambda z: (z % 2) * 2 - 1
+	),
 	'ÆC': attrdict(
 		arity = 1,
 		ldepth = 0,
